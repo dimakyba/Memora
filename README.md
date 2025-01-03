@@ -22,3 +22,7 @@ TO-DO:
 - [ ] popup menu when you press three dots view edit info delete
 - [ ] customize push notifications
 - [ ] implement 2 interval counting algorithms for two difficulties: difficult: frequent and fast. easy: infrequent and slow.
+
+## dev log:
+
+03.01.25 - init the project, made git branches
