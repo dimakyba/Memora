@@ -7,6 +7,7 @@ The purpose of this work is to develop a mobile application for learning informa
 stack:
 + Android Studio
 + Kotlin
++ Jetpack Compose
 
 
 TO-DO:
@@ -25,4 +26,11 @@ TO-DO:
 
 ## dev log:
 
-03.01.25 - init the project, made git branches
+### 03.01.25
+
+init the project, made git branches
+
+### 04.01.25 
+1) created design prototype: https://www.figma.com/design/BUK3l9sfjKn4nrAt1FZQty/Memora?node-id=601-10&p=f
+2) using Jetpack Compose created top bar and Add Button
+
