@@ -30,7 +30,7 @@ TO-DO:
 
 init the project, made git branches
 
-### 04.01.25 
+### 04.01.25
 1) created design prototype: https://www.figma.com/design/BUK3l9sfjKn4nrAt1FZQty/Memora?node-id=601-10&p=f
 2) using Jetpack Compose created top bar and Add Button
 
@@ -38,6 +38,7 @@ init the project, made git branches
 let's start from the beginning
 
 architecture:
+
     + MVVM pattern
     + notifications:
         + NotificationManager.kt
@@ -74,19 +75,19 @@ architecture:
     + presentation (UI, ViewModel)
         screens:
             settings:
-                SettingsScreen.kt
-                SettingsViewModel.kt
-                AboutScreen.kt
+                + SettingsScreen.kt
+                + SettingsViewModel.kt
+                + AboutScreen.kt
             decklist:
-                DeckListScreen.kt
-                DeckListViewModel.kt
+                + DeckListScreen.kt
+                + DeckListViewModel.kt
             card:
-                CardScreen.kt
-                CardViewModel.kt
+                + CardScreen.kt
+                + CardViewModel.kt
         components:
-            CardItem.kt
-            DeckItem.kt
-            ReviewProgressBar.kt
+            + CardItem.kt
+            + DeckItem.kt
+            + ReviewProgressBar.kt
     + di (dependency injection (Dagger Hilt))
         + AppModule.kt (general dependencies)
         + DataModule.kt (storage and repositories)
