@@ -30,7 +30,69 @@ TO-DO:
 
 init the project, made git branches
 
-### 04.01.25 
+### 04.01.25
 1) created design prototype: https://www.figma.com/design/BUK3l9sfjKn4nrAt1FZQty/Memora?node-id=601-10&p=f
 2) using Jetpack Compose created top bar and Add Button
 
+### 02.03.2025
+let's start from the beginning
+
+architecture:
+
+    + MVVM pattern
+    + notifications:
+        + NotificationManager.kt
+        + NotificationScheduler.kt
+    + data (Room (DB), JSON, Repositories)
+        local (db):
+            + CardEntity.kt
+            + DeckEntity.kt
+            + CardDao.kt
+            + DeckDao.kt
+            + AppDatabase.kt
+        repository: 
+            + CardRepository.kt
+            + DeckRepository.kt
+        json:
+            + JsonStorage.kt (import and export as json)
+    + domain (business logic (models, algorithms, use-cases))
+        models: (pure models without dependencies)
+            + Card.kt
+            + Deck.kt
+            + Content.kt
+        algorithms:
+            + RepetitionAlgorithm.kt
+            + FixedIntervalAlgorithm.kt
+            + AdaptiveAlgorithm.kt
+        usecases:
+            + GetCardsForTodayUseCase.kt
+            + UpdateCardReviewUseCase.kt
+            + ScheduleNextReviewUseCase.kt  
+            + GetDecksUseCase.kt  
+            + GetCardsByDeckUseCase.kt
+            + UpdateCardProgressUseCase.kt
+            + DeckProgressUseCase.kt
+    + presentation (UI, ViewModel)
+        screens:
+            settings:
+                + SettingsScreen.kt
+                + SettingsViewModel.kt
+                + AboutScreen.kt
+            decklist:
+                + DeckListScreen.kt
+                + DeckListViewModel.kt
+            card:
+                + CardScreen.kt
+                + CardViewModel.kt
+        components:
+            + CardItem.kt
+            + DeckItem.kt
+            + ReviewProgressBar.kt
+    + di (dependency injection (Dagger Hilt))
+        + AppModule.kt (general dependencies)
+        + DataModule.kt (storage and repositories)
+        + DomainModule.kt (use-cases and algorithms)
+        + PresentationModule.kt (screens and ui components)
+        + NotificationModule.kt
+
+described our models with data classes
