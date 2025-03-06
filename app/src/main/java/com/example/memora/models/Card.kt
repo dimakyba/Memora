@@ -1,6 +1,6 @@
 package com.example.memora.domain.models
 
-import com.example.memora.domain.algorithms.IRepetitionAlgorithm
+import com.example.memora.algorithms.AlgorithmType
 
 data class Card(
   val id: Long = 0,
@@ -8,7 +8,6 @@ data class Card(
   val content: Content,
   val lastReviewDate: Long,
   val nextReviewDate: Long,
-  val easeFactor: Float = 2.5f,
   val reviewCount: Int = 0,
-  val algorithm: IRepetitionAlgorithm // Полиморфный алгоритм прямо в карточке!
+  val algorithm: AlgorithmType
 )

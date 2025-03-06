@@ -72,6 +72,8 @@ architecture:
             + GetCardsByDeckUseCase.kt
             + UpdateCardProgressUseCase.kt
             + DeckProgressUseCase.kt
+            + ScheduleNotificationUseCase.kt
+            + ShowNotificationUseCase.kt
     + presentation (UI, ViewModel)
         screens:
             settings:
