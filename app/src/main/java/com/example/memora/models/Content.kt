@@ -1,4 +1,4 @@
-package com.example.memora.domain.models
+package com.example.memora.models
 
 data class Content(val items: List<ContentItem>)
 

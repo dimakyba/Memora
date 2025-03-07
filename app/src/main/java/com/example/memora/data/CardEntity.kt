@@ -1,6 +1,9 @@
 package com.example.memora.data
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.example.memora.algorithms.AlgorithmType
 
 @Entity(
@@ -15,7 +18,7 @@ import com.example.memora.algorithms.AlgorithmType
 data class CardEntity(
   @PrimaryKey(autoGenerate = true) val id: Long = 0,
   @ColumnInfo(index = true) val deckId: Long,
-  val content: String, // JSON-строка (конвертируем через TypeConverter)
+  val content: String,
   val lastReviewDate: Long,
   val nextReviewDate: Long,
   val reviewCount: Int = 0,
