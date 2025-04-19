@@ -12,6 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -29,3 +30,10 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
+
+    # Шаг для загрузки APK как артефакт
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-app-apk
+        path: app/build/outputs/apk/release/app-release.apk
