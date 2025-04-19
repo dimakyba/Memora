@@ -1,4 +1,4 @@
-package com.example.memora.models
+package com.example.memora.core.models
 
 sealed class ContentItem {
   data class Text(val text: String) : ContentItem()

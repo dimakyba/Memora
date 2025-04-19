@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.memora.core.Utils
 import com.example.memora.core.data.CardEntity
-import com.example.memora.models.ContentItem
+import com.example.memora.core.models.ContentItem
 
 
 class PreviewCardDialog(

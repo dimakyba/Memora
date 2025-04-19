@@ -1,4 +1,4 @@
-package com.example.memora.algorithms
+package com.example.memora.core.algorithms
 
 interface RepetitionAlgorithm {
   fun getNextReviewDate(reviewCount: Int): Long

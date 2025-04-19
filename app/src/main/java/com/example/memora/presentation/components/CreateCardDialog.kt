@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.memora.algorithms.AlgorithmType
+import com.example.memora.core.algorithms.AlgorithmType
 class CreateCardDialog(
   private val onDismiss: () -> Unit,
   private val onConfirm: (String, String, AlgorithmType) -> Unit

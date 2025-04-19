@@ -1,4 +1,4 @@
-package com.example.memora.algorithms
+package com.example.memora.core.algorithms
 
 class AdaptiveAlgorithm : RepetitionAlgorithm {
 

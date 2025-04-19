@@ -2,9 +2,9 @@ package com.example.memora.presentation.features.cards
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.memora.algorithms.AlgorithmType
-import com.example.memora.algorithms.FixedIntervalAlgorithm
-import com.example.memora.algorithms.RepetitionAlgorithm
+import com.example.memora.core.algorithms.AlgorithmType
+import com.example.memora.core.algorithms.FixedIntervalAlgorithm
+import com.example.memora.core.algorithms.RepetitionAlgorithm
 import com.example.memora.core.data.CardDao
 import com.example.memora.core.data.CardEntity
 import com.example.memora.core.data.DeckDao

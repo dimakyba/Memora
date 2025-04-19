@@ -1,6 +1,6 @@
-package com.example.memora.models
+package com.example.memora.core.models
 
-import com.example.memora.algorithms.AlgorithmType
+import com.example.memora.core.algorithms.AlgorithmType
 
 data class Card(
   val id: Long = 0,

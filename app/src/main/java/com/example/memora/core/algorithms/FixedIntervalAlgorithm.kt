@@ -1,4 +1,4 @@
-package com.example.memora.algorithms
+package com.example.memora.core.algorithms
 
 import java.util.concurrent.TimeUnit
 
