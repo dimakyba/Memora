@@ -20,10 +20,11 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Install Kotlin
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y kotlin
+    # Remove the Kotlin installation step - Gradle will handle it
+    # - name: Install Kotlin
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y kotlin
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -31,8 +32,10 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    # Only upload APK if build succeeds
     - name: Upload APK as artifact
-      uses: actions/upload-artifact@v4
+      if: success()
+      uses: actions/upload-artifact@v3
       with:
         name: my-app-apk
         path: app/build/outputs/apk/release/app-release.apk
