@@ -4,10 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.memora.algorithms.AdaptiveAlgorithm
-import com.example.memora.algorithms.AlgorithmType
-import com.example.memora.algorithms.FixedIntervalAlgorithm
-import com.example.memora.algorithms.RepetitionAlgorithm
+import com.example.memora.core.algorithms.AdaptiveAlgorithm
+import com.example.memora.core.algorithms.AlgorithmType
+import com.example.memora.core.algorithms.FixedIntervalAlgorithm
+import com.example.memora.core.algorithms.RepetitionAlgorithm
 
 @Entity(
   tableName = "cards",
