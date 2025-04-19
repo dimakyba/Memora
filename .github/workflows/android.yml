@@ -1,17 +1,42 @@
 name: Android CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
+  push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-check:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Run build (just check)
+      run: ./gradlew build
+
+  build-release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/wrapper
+        key: gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: gradle-wrapper-
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -20,22 +45,14 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    # Remove the Kotlin installation step - Gradle will handle it
-    # - name: Install Kotlin
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y kotlin
-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build release APK
+      run: ./gradlew assembleRelease
 
-    # Only upload APK if build succeeds
-    - name: Upload APK as artifact
-      if: success()
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: my-app-apk
+        name: app-release
         path: app/build/outputs/apk/release/app-release.apk
