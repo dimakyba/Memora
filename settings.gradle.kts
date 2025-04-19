@@ -21,3 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Memora"
 include(":app")
+
+
+
+
