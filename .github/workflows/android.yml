@@ -31,9 +31,8 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    # Шаг для загрузки APK как артефакт
     - name: Upload APK as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: my-app-apk
         path: app/build/outputs/apk/release/app-release.apk
