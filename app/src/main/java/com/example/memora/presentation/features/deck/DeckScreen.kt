@@ -51,12 +51,12 @@ class DeckScreen(
 
     Scaffold(
       topBar = {
-        TopAppBar(title = "Deck: ${deckName ?: "Deck"}").Display()
+        TopAppBar(title = "Дека: ${deckName ?: "Deck"}").Display()
       },
       floatingActionButton = {
         AddButton(
           onClick = { showCreateDialog = true },
-          contentDescription = "Add card"
+          contentDescription = "Додати картку"
         ).Display()
       },
       content = { paddingValues ->

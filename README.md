@@ -124,4 +124,28 @@ TO-DO
 
 # 25.05.25
 1. now we can rename and delete deck, 3dots, deck name preveiww looks nicer
+
 2. card item look way better, learning screen(s), adaptive algorithm (based on how hard was it)
+
+Changed the review intervals according to difficulty:
+For the first review (reviewCount = 1):
+Difficult (1): 1 hour
+Medium (3): 6 hours
+Easy (5): 1 day
+For second repetition (reviewCount = 2):
+Difficult (1): 6 hours
+Medium (3): 1 day
+Easy (5): 3 days
+For subsequent repetitions:
+Difficult: interval * (ease - penalty)
+Medium: interval * ease
+Easy: interval * (ease + bonus)
+Improved handling of learning quality:
+For difficult learning (quality < 3):
+Significantly reduce ease (penalty * 2)
+Reset interval to 6 hours
+When medium (quality = 3):
+Slightly decrease ease (penalty * 0.5)
+At easy (quality > 3):
+Increase ease in proportion to quality
+Now cards that the user marks as difficult will appear much more frequently for repetition, and easy cards will appear less frequently. This should make the learning process more efficient and adapted to individual memorization.

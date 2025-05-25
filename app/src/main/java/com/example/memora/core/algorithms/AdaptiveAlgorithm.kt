@@ -3,70 +3,99 @@ package com.example.memora.core.algorithms
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class AdaptiveAlgorithm : RepetitionAlgorithm {
   companion object {
-    private const val MIN_INTERVAL_MINUTES = 5L
-    private const val MAX_INTERVAL_DAYS = 365L
     private const val INITIAL_EASE = 2.5
     private const val MIN_EASE = 1.3
     private const val MAX_EASE = 3.0
-    private const val EASE_BONUS = 0.15
-    private const val EASE_PENALTY = 0.2
+
+    // Initial intervals in hours for first review based on quality
+    private val INITIAL_INTERVALS = mapOf(
+      1 to 4L,     // Hard: 4 hours
+      2 to 8L,     // Hard-Medium: 8 hours
+      3 to 12L,    // Medium: 12 hours
+      4 to 24L,    // Medium-Easy: 1 day
+      5 to 48L     // Easy: 2 days
+    )
   }
 
-  private var ease: Double = INITIAL_EASE
-  private var interval: Long = TimeUnit.MINUTES.toMillis(MIN_INTERVAL_MINUTES)
+  private var easinessFactor: Double = INITIAL_EASE
+  private var lastInterval: Long = TimeUnit.HOURS.toMillis(4)
+  private var lastQuality: Int = 0
 
   override fun getNextReviewDate(reviewCount: Int): Long {
     val now = System.currentTimeMillis()
 
     if (reviewCount == 0) {
-      return now
+      val initialHours = INITIAL_INTERVALS[lastQuality] ?: 4L
+      return now + TimeUnit.HOURS.toMillis(initialHours)
     }
 
-    val nextIntervalDays = when (reviewCount) {
-      1 -> 1.0
-      2 -> 3.0
+    // Calculate next interval based on SM-2 algorithm
+    val nextInterval = when (reviewCount) {
+      1 -> when (lastQuality) {
+        1 -> TimeUnit.HOURS.toMillis(8)     // Hard: 8 hours
+        2 -> TimeUnit.HOURS.toMillis(12)    // Hard-Medium: 12 hours
+        3 -> TimeUnit.DAYS.toMillis(1)      // Medium: 1 day
+        4 -> TimeUnit.DAYS.toMillis(3)      // Medium-Easy: 3 days
+        else -> TimeUnit.DAYS.toMillis(5)   // Easy: 5 days
+      }
+      2 -> when (lastQuality) {
+        1 -> TimeUnit.DAYS.toMillis(1)      // Hard: 1 day
+        2 -> TimeUnit.DAYS.toMillis(3)      // Hard-Medium: 3 days
+        3 -> TimeUnit.DAYS.toMillis(7)      // Medium: 1 week
+        4 -> TimeUnit.DAYS.toMillis(14)     // Medium-Easy: 2 weeks
+        else -> TimeUnit.DAYS.toMillis(21)  // Easy: 3 weeks
+      }
       else -> {
-        val currentIntervalDays = TimeUnit.MILLISECONDS.toDays(interval)
-        currentIntervalDays * ease
+        val baseInterval = if (lastQuality < 3) {
+          // For hard ratings, decrease interval
+          lastInterval / 2
+        } else {
+          // For good ratings, increase interval based on ease factor
+          (lastInterval * easinessFactor).toLong()
+        }
+
+        when (lastQuality) {
+          1 -> baseInterval / 2     // Hard: half the interval
+          2 -> baseInterval * 2/3   // Hard-Medium: 2/3 of interval
+          3 -> baseInterval         // Medium: keep interval
+          4 -> baseInterval * 3/2   // Medium-Easy: 1.5x interval
+          else -> baseInterval * 2  // Easy: double interval
+        }
       }
     }
 
-    val boundedIntervalDays = min(max(nextIntervalDays, MIN_INTERVAL_MINUTES / (24.0 * 60)), MAX_INTERVAL_DAYS.toDouble())
-    interval = TimeUnit.DAYS.toMillis(boundedIntervalDays.toLong())
-
-    return now + interval
+    lastInterval = nextInterval
+    return now + nextInterval
   }
 
   override fun calculateProgress(reviewCount: Int): Int {
-    return when {
-      reviewCount == 0 -> 0
-      reviewCount == 1 -> 15
-      reviewCount == 2 -> 30
-      else -> {
-        val baseProgress = min(85, 30 + (reviewCount - 2) * 15)
-        val easeBonus = ((ease - MIN_EASE) / (MAX_EASE - MIN_EASE) * 15).roundToInt()
-        min(100, baseProgress + easeBonus)
-      }
+    if (reviewCount == 0) return 0
+
+    val baseProgress = min(60, reviewCount * 10)
+
+    val qualityBonus = when (lastQuality) {
+      1 -> 0    // Hard
+      2 -> 5    // Hard-Medium
+      3 -> 10   // Medium
+      4 -> 15   // Medium-Easy
+      5 -> 20   // Easy
+      else -> 0
     }
+
+    val easeBonus = ((easinessFactor - MIN_EASE) / (MAX_EASE - MIN_EASE) * 20.0).toInt()
+
+    return min(100, baseProgress + qualityBonus + easeBonus)
   }
 
   fun processReview(quality: Int) {
-    require(quality in 0..5) { "Quality must be between 0 and 5" }
+    require(quality in 1..5) { "Quality must be between 1 and 5" }
+    lastQuality = quality
 
-    // Update ease factor based on review quality
-    if (quality < 3) {
-      // Failed review - decrease ease
-      ease = max(MIN_EASE, ease - EASE_PENALTY)
-      // Reset interval for failed reviews
-      interval = TimeUnit.DAYS.toMillis(1)
-    } else {
-      // Successful review - increase ease based on quality
-      val easeModifier = (quality - 3) * EASE_BONUS
-      ease = min(MAX_EASE, ease + easeModifier)
-    }
+    // Update easiness factor using SM-2 formula
+    easinessFactor = (easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
+      .coerceIn(MIN_EASE, MAX_EASE)
   }
 }

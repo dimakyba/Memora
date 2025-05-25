@@ -14,20 +14,20 @@ class DeckViewModel(private val deckDao: DeckDao) : ViewModel() {
   val decks: StateFlow<List<DeckEntity>> = _decks
 
   init {
-    getAllDecks() // Получаем все деки при старте
+    getAllDecks()
   }
 
   private fun getAllDecks() {
     viewModelScope.launch {
-      _decks.value = deckDao.getAllDecks() // Обновляем данные
+      _decks.value = deckDao.getAllDecks()
     }
   }
 
   fun addDeck(name: String) {
     viewModelScope.launch {
       val newDeck = DeckEntity(name = name)
-      deckDao.insertDeck(newDeck) // Добавляем новую деку в базу
-      getAllDecks() // Перезагружаем список дек
+      deckDao.insertDeck(newDeck)
+      getAllDecks()
     }
   }
 

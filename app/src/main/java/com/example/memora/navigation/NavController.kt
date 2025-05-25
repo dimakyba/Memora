@@ -13,7 +13,7 @@ import com.example.memora.presentation.features.cards.CardViewModel
 import com.example.memora.presentation.features.deck.DeckScreen
 import com.example.memora.presentation.features.deck.DeckViewModel
 import com.example.memora.presentation.features.decklist.DeckListScreen
-import com.example.memora.presentation.features.learning.LearningScreen
+import com.example.memora.presentation.features.cards.LearningScreen
 
 class NavController(
   private val navController: NavHostController,
