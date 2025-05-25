@@ -37,7 +37,7 @@ init the project, made git branches
 ### 02.03.2025
 let's start from the beginning
 
-architecture:
+<!-- architecture:
 
     + MVVM pattern
     + notifications:
@@ -95,7 +95,7 @@ architecture:
         + DataModule.kt (storage and repositories)
         + DomainModule.kt (use-cases and algorithms)
         + PresentationModule.kt (screens and ui components)
-        + NotificationModule.kt
+        + NotificationModule.kt -->
 
 described our models with data classes
 
@@ -106,7 +106,9 @@ described our models with data classes
 
 TO-DO
 0. ci/cd to build artifacts (apk)
-1. make deck preview better (3-dot button to rename and delete, preview picture) (`DeckItem` in `DeckListScreen`) `DeckListViewModel`
+
+1. make deck preview better (3-dot button to rename and delete, preview picture) (`DeckItem` in `DeckListScreen`) `DeckListViewModel`????????
+
 2. unify creation dialog and make it fancier `class CreateDialog() : Component`
 3. learning screen with preview, it will be similar to editing but we cant edit and there would be only 2 buttons (done and exit), `LearningScreen`
 4. make the unified editng and creation screen where we can add
@@ -118,4 +120,10 @@ TO-DO
 8. about screen.
 9. settings screen where we can choose our intervals for fixed algorithm
 10. JsonProcessor for exporting one deck, all decks, importing deck from file (JSON and .memoradeck (Bytestream))
-11. documentation
+11. Foreground Service
+12. documentation
+
+
+# 25.05.25
+1. now we can rename and delete deck, 3dots, deck name preveiww looks nicer
+
