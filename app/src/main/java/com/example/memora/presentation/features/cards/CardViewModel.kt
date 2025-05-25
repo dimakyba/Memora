@@ -1,19 +1,24 @@
 package com.example.memora.presentation.features.cards
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.memora.core.algorithms.*
 import com.example.memora.core.data.CardDao
 import com.example.memora.core.data.CardEntity
 import com.example.memora.core.data.DeckDao
+import com.example.memora.core.notifications.NotificationScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CardViewModel(
+  application: Application,
   private val cardDao: CardDao,
   private val deckDao: DeckDao,
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+  private val notificationScheduler = NotificationScheduler(application)
 
   private val _cards = MutableStateFlow<List<CardEntity>>(emptyList())
   val cards: StateFlow<List<CardEntity>> = _cards
@@ -50,9 +55,21 @@ class CardViewModel(
       card?.let {
         val updatedCard = feedback.processReview(it)
         cardDao.updateCard(updatedCard)
+
+        // Schedule notification for next review
+        val now = System.currentTimeMillis()
+        val delay = updatedCard.nextReviewDate - now
+        if (delay > 0) {
+          notificationScheduler.scheduleReviewNotification(cardId, delay)
+        }
+
         getCardsForDeck(it.deckId)
       }
     }
+  }
+
+  fun cancelNotification(cardId: Long) {
+    notificationScheduler.cancelReviewNotification(cardId)
   }
 
   fun addCard(deckId: Long, name: String, content: String, algorithm: AlgorithmType) {
