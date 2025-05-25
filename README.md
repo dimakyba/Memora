@@ -106,9 +106,7 @@ described our models with data classes
 
 TO-DO
 0. ci/cd to build artifacts (apk)
-
 1. make deck preview better (3-dot button to rename and delete, preview picture) (`DeckItem` in `DeckListScreen`) `DeckListViewModel`????????
-
 2. unify creation dialog and make it fancier `class CreateDialog() : Component`
 3. learning screen with preview, it will be similar to editing but we cant edit and there would be only 2 buttons (done and exit), `LearningScreen`
 4. make the unified editng and creation screen where we can add
@@ -127,3 +125,27 @@ TO-DO
 # 25.05.25
 1. now we can rename and delete deck, 3dots, deck name preveiww looks nicer
 
+2. card item look way better, learning screen(s), adaptive algorithm (based on how hard was it)
+
+Changed the review intervals according to difficulty:
+For the first review (reviewCount = 1):
+Difficult (1): 1 hour
+Medium (3): 6 hours
+Easy (5): 1 day
+For second repetition (reviewCount = 2):
+Difficult (1): 6 hours
+Medium (3): 1 day
+Easy (5): 3 days
+For subsequent repetitions:
+Difficult: interval * (ease - penalty)
+Medium: interval * ease
+Easy: interval * (ease + bonus)
+Improved handling of learning quality:
+For difficult learning (quality < 3):
+Significantly reduce ease (penalty * 2)
+Reset interval to 6 hours
+When medium (quality = 3):
+Slightly decrease ease (penalty * 0.5)
+At easy (quality > 3):
+Increase ease in proportion to quality
+Now cards that the user marks as difficult will appear much more frequently for repetition, and easy cards will appear less frequently. This should make the learning process more efficient and adapted to individual memorization.

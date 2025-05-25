@@ -4,8 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
@@ -20,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.memora.core.algorithms.AlgorithmType
+
 class CreateCardDialog(
   private val onDismiss: () -> Unit,
   private val onConfirm: (String, String, AlgorithmType) -> Unit
@@ -30,6 +34,7 @@ class CreateCardDialog(
     var name by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var selectedAlgorithm by remember { mutableStateOf(AlgorithmType.FIXED_INTERVAL) }
+    val scrollState = rememberScrollState()
 
     AlertDialog(
       onDismissRequest = onDismiss,
@@ -55,6 +60,8 @@ class CreateCardDialog(
             onValueChange = { content = it },
             modifier = Modifier
               .fillMaxWidth()
+              .height(200.dp)
+              .verticalScroll(scrollState)
               .padding(bottom = 8.dp),
             decorationBox = { innerTextField ->
               if (content.isEmpty()) {
@@ -78,7 +85,10 @@ class CreateCardDialog(
                 onClick = { selectedAlgorithm = algorithm }
               )
               Text(
-                text = algorithm.name,
+                text = when(algorithm) {
+                  AlgorithmType.FIXED_INTERVAL -> "Фіксований інтервал"
+                  AlgorithmType.ADAPTIVE -> "Адаптивний"
+                },
                 modifier = Modifier.padding(start = 8.dp)
               )
             }

@@ -1,24 +1,30 @@
 package com.example.memora.presentation.features.cards
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.memora.core.algorithms.AlgorithmType
-import com.example.memora.core.algorithms.FixedIntervalAlgorithm
-import com.example.memora.core.algorithms.RepetitionAlgorithm
+import com.example.memora.core.algorithms.*
 import com.example.memora.core.data.CardDao
 import com.example.memora.core.data.CardEntity
 import com.example.memora.core.data.DeckDao
+import com.example.memora.core.notifications.NotificationScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CardViewModel(
+  application: Application,
   private val cardDao: CardDao,
   private val deckDao: DeckDao,
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+  private val notificationScheduler = NotificationScheduler(application)
 
   private val _cards = MutableStateFlow<List<CardEntity>>(emptyList())
   val cards: StateFlow<List<CardEntity>> = _cards
+
+  private val _currentCard = MutableStateFlow<CardEntity?>(null)
+  val currentCard: StateFlow<CardEntity?> = _currentCard
 
   private val _deckName = MutableStateFlow<String?>(null)
   val deckName: StateFlow<String?> = _deckName
@@ -33,9 +39,37 @@ class CardViewModel(
 
   fun getDeckName(deckId: Long) {
     viewModelScope.launch {
-      val deck = deckDao.getDeckById(deckId)
-      _deckName.value = deck?.name
+      _deckName.value = deckDao.getDeckById(deckId)?.name
     }
+  }
+
+  fun loadCard(cardId: Long) {
+    viewModelScope.launch {
+      _currentCard.value = cardDao.getCardById(cardId)
+    }
+  }
+
+  fun processLearningFeedback(cardId: Long, feedback: LearningFeedback) {
+    viewModelScope.launch {
+      val card = cardDao.getCardById(cardId)
+      card?.let {
+        val updatedCard = feedback.processReview(it)
+        cardDao.updateCard(updatedCard)
+
+        // Schedule notification for next review
+        val now = System.currentTimeMillis()
+        val delay = updatedCard.nextReviewDate - now
+        if (delay > 0) {
+          notificationScheduler.scheduleReviewNotification(cardId, delay)
+        }
+
+        getCardsForDeck(it.deckId)
+      }
+    }
+  }
+
+  fun cancelNotification(cardId: Long) {
+    notificationScheduler.cancelReviewNotification(cardId)
   }
 
   fun addCard(deckId: Long, name: String, content: String, algorithm: AlgorithmType) {
@@ -54,18 +88,17 @@ class CardViewModel(
     }
   }
 
-  fun learnCard(cardId: Long) {
+  fun updateCard(cardId: Long, name: String, content: String, algorithm: AlgorithmType) {
     viewModelScope.launch {
-      val card = cardDao.getCardById(cardId)
-      if (card != null) {
-        val algorithm = card.getRepetitionAlgorithm()
-        val updatedCard = card.copy(
-          reviewCount = card.reviewCount + 1,
-          lastReviewDate = System.currentTimeMillis(), // Обновление даты последнего повторения
-          nextReviewDate = algorithm.getNextReviewDate(card.reviewCount + 1)
+      val existingCard = cardDao.getCardById(cardId)
+      if (existingCard != null) {
+        val updatedCard = existingCard.copy(
+          name = name,
+          content = content,
+          algorithm = algorithm
         )
-        cardDao.updateCard(updatedCard) // Сохранение обновлённой карточки в базе данных
-        getCardsForDeck(card.deckId) // Обновляем список карточек
+        cardDao.updateCard(updatedCard)
+        getCardsForDeck(existingCard.deckId)
       }
     }
   }
@@ -75,11 +108,8 @@ class CardViewModel(
       val card = cardDao.getCardById(cardId)
       if (card != null) {
         cardDao.deleteCard(card)
-        getCardsForDeck(card.deckId) // Обновляем список карточек
+        getCardsForDeck(card.deckId)
       }
     }
   }
-
-
 }
-
