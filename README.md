@@ -106,7 +106,9 @@ described our models with data classes
 
 TO-DO
 0. ci/cd to build artifacts (apk)
+
 1. make deck preview better (3-dot button to rename and delete, preview picture) (`DeckItem` in `DeckListScreen`) `DeckListViewModel`????????
+
 2. unify creation dialog and make it fancier `class CreateDialog() : Component`
 3. learning screen with preview, it will be similar to editing but we cant edit and there would be only 2 buttons (done and exit), `LearningScreen`
 4. make the unified editng and creation screen where we can add
@@ -124,3 +126,4 @@ TO-DO
 
 # 25.05.25
 1. now we can rename and delete deck, 3dots, deck name preveiww looks nicer
+
