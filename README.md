@@ -124,3 +124,4 @@ TO-DO
 
 # 25.05.25
 1. now we can rename and delete deck, 3dots, deck name preveiww looks nicer
+2. card item look way better, learning screen(s), adaptive algorithm (based on how hard was it)

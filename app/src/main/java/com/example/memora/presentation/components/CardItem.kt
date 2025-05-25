@@ -3,9 +3,13 @@ package com.example.memora.presentation.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -24,8 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.memora.core.Utils
 import com.example.memora.core.data.CardEntity
@@ -39,18 +43,13 @@ class CardItem(
 ) : Component {
   @Composable
   override fun Display() {
-    val goldenRatio = 1.618f
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val cardHeight = screenWidth / goldenRatio
-    val progress = card.progress
-    val progressBar = ProgressBar(progress)
+    val scrollState = rememberScrollState()
     val isLearnEnabled = System.currentTimeMillis() >= card.nextReviewDate
     var expanded by remember { mutableStateOf(false) }
 
     Card(
       modifier = Modifier
         .fillMaxWidth()
-        .height(cardHeight)
         .clickable { onPreviewClick() },
       elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -62,33 +61,56 @@ class CardItem(
         Column(
           modifier = Modifier
             .fillMaxWidth()
-            .align(Alignment.TopCenter)
+            .padding(end = 32.dp)
         ) {
           Text(
             text = card.name,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
               .fillMaxWidth()
               .padding(bottom = 8.dp),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
           )
 
           Text(
-            text = "Наступне повторення: ${Utils.formatTimeMillis(card.nextReviewDate)}",
-            modifier = Modifier.padding(bottom = 8.dp)
-          )
-
-          Button(
-            onClick = onReviewClick,
-            enabled = isLearnEnabled,
+            text = card.content,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(bottom = 8.dp)
+              .padding(bottom = 8.dp),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+          )
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
           ) {
-            Text("LEARN")
+            Column(
+              modifier = Modifier.weight(1f)
+            ) {
+              Text(
+                text = "Наступне повторення:",
+                style = MaterialTheme.typography.labelMedium
+              )
+              Text(
+                text = Utils.formatTimeMillis(card.nextReviewDate),
+                style = MaterialTheme.typography.bodySmall
+              )
+            }
+
+            Button(
+              onClick = onReviewClick,
+              enabled = isLearnEnabled,
+              modifier = Modifier.padding(start = 8.dp)
+            ) {
+              Text("Вчити")
+            }
           }
 
-          progressBar.Display()
+          Spacer(modifier = Modifier.height(8.dp))
+          ProgressBar(card.progress).Display()
         }
 
         IconButton(
@@ -120,5 +142,4 @@ class CardItem(
       }
     }
   }
-
 }

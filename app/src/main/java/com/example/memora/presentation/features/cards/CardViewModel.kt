@@ -2,9 +2,7 @@ package com.example.memora.presentation.features.cards
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.memora.core.algorithms.AlgorithmType
-import com.example.memora.core.algorithms.FixedIntervalAlgorithm
-import com.example.memora.core.algorithms.RepetitionAlgorithm
+import com.example.memora.core.algorithms.*
 import com.example.memora.core.data.CardDao
 import com.example.memora.core.data.CardEntity
 import com.example.memora.core.data.DeckDao
@@ -20,6 +18,9 @@ class CardViewModel(
   private val _cards = MutableStateFlow<List<CardEntity>>(emptyList())
   val cards: StateFlow<List<CardEntity>> = _cards
 
+  private val _currentCard = MutableStateFlow<CardEntity?>(null)
+  val currentCard: StateFlow<CardEntity?> = _currentCard
+
   private val _deckName = MutableStateFlow<String?>(null)
   val deckName: StateFlow<String?> = _deckName
 
@@ -33,8 +34,24 @@ class CardViewModel(
 
   fun getDeckName(deckId: Long) {
     viewModelScope.launch {
-      val deck = deckDao.getDeckById(deckId)
-      _deckName.value = deck?.name
+      _deckName.value = deckDao.getDeckById(deckId)?.name
+    }
+  }
+
+  fun loadCard(cardId: Long) {
+    viewModelScope.launch {
+      _currentCard.value = cardDao.getCardById(cardId)
+    }
+  }
+
+  fun processLearningFeedback(cardId: Long, feedback: LearningFeedback) {
+    viewModelScope.launch {
+      val card = cardDao.getCardById(cardId)
+      card?.let {
+        val updatedCard = feedback.processReview(it)
+        cardDao.updateCard(updatedCard)
+        getCardsForDeck(it.deckId)
+      }
     }
   }
 
@@ -54,18 +71,17 @@ class CardViewModel(
     }
   }
 
-  fun learnCard(cardId: Long) {
+  fun updateCard(cardId: Long, name: String, content: String, algorithm: AlgorithmType) {
     viewModelScope.launch {
-      val card = cardDao.getCardById(cardId)
-      if (card != null) {
-        val algorithm = card.getRepetitionAlgorithm()
-        val updatedCard = card.copy(
-          reviewCount = card.reviewCount + 1,
-          lastReviewDate = System.currentTimeMillis(), // Обновление даты последнего повторения
-          nextReviewDate = algorithm.getNextReviewDate(card.reviewCount + 1)
+      val existingCard = cardDao.getCardById(cardId)
+      if (existingCard != null) {
+        val updatedCard = existingCard.copy(
+          name = name,
+          content = content,
+          algorithm = algorithm
         )
-        cardDao.updateCard(updatedCard) // Сохранение обновлённой карточки в базе данных
-        getCardsForDeck(card.deckId) // Обновляем список карточек
+        cardDao.updateCard(updatedCard)
+        getCardsForDeck(existingCard.deckId)
       }
     }
   }
@@ -75,11 +91,8 @@ class CardViewModel(
       val card = cardDao.getCardById(cardId)
       if (card != null) {
         cardDao.deleteCard(card)
-        getCardsForDeck(card.deckId) // Обновляем список карточек
+        getCardsForDeck(card.deckId)
       }
     }
   }
-
-
 }
-
