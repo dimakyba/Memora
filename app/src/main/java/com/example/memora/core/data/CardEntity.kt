@@ -31,7 +31,7 @@ data class CardEntity(
 
 
 
-  fun getRepetitionAlgorithm(): RepetitionAlgorithm {
+   fun getRepetitionAlgorithm(): RepetitionAlgorithm {
     return when (algorithm) {
       AlgorithmType.FIXED_INTERVAL -> FixedIntervalAlgorithm()
       AlgorithmType.ADAPTIVE -> AdaptiveAlgorithm()

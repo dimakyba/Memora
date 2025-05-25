@@ -22,10 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.memora.core.data.DeckEntity
 import com.example.memora.presentation.Screen
 import com.example.memora.presentation.components.AddButton
-import com.example.memora.presentation.components.CreateDeckDialog
+import com.example.memora.presentation.components.ConfirmationDialog
 import com.example.memora.presentation.components.DeckItem
+import com.example.memora.presentation.components.DeckNameDialog
 import com.example.memora.presentation.components.TopAppBar
 import com.example.memora.presentation.features.deck.DeckViewModel
 
@@ -35,7 +37,10 @@ class DeckListScreen(
 ) {
   @Composable
   fun Show() {
-    var showDialog by remember { mutableStateOf(false) }
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var showRenameDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedDeck by remember { mutableStateOf<DeckEntity?>(null) }
 
     val decks by viewModel.decks.collectAsStateWithLifecycle(
       initialValue = emptyList(),
@@ -44,22 +49,21 @@ class DeckListScreen(
 
     Scaffold(
       topBar = {
-        TopAppBar(title = "Memora").Display()// Добавляем CustomTopAppBar в Scaffold
+        TopAppBar(title = "Memora").Display()
       },
       floatingActionButton = {
         AddButton(
-          onClick = { showDialog = true },
-          contentDescription = "Создать деку"
+          onClick = { showCreateDialog = true },
+          contentDescription = "Створити деку"
         ).Display()
       }
     ) { paddingValues ->
       Box(
         modifier = Modifier
           .fillMaxSize()
-          .padding(paddingValues) // Учитываем отступы от Scaffold
+          .padding(paddingValues)
       ) {
         if (decks.isEmpty()) {
-          // Если дек нет, показываем текст по центру экрана
           Box(
             modifier = Modifier
               .fillMaxSize()
@@ -73,7 +77,6 @@ class DeckListScreen(
             )
           }
         } else {
-          // Если есть деки, показываем сетку
           LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier
@@ -90,8 +93,18 @@ class DeckListScreen(
                 deck = deck,
                 cardCount = cardCount,
                 onClick = {
-                  // Переход на DeckScreen с передачей deckId
                   navController.navigate("${Screen.Deck.route}/${deck.id}")
+                },
+                onRenameClick = {
+                  selectedDeck = deck
+                  showRenameDialog = true
+                },
+                onDeleteClick = {
+                  selectedDeck = deck
+                  showDeleteDialog = true
+                },
+                onExportClick = {
+                  // TODO: Implement export functionality
                 }
               ).Display()
             }
@@ -100,13 +113,48 @@ class DeckListScreen(
       }
     }
 
-    // Диалог создания деки
-    if (showDialog) {
-      CreateDeckDialog(
-        onDismiss = { showDialog = false },
+    if (showCreateDialog) {
+      DeckNameDialog(
+        title = "Введіть назву деки:",
+        confirmButtonText = "Створити",
+        onDismiss = { showCreateDialog = false },
         onConfirm = { name ->
           viewModel.addDeck(name)
-          showDialog = false
+          showCreateDialog = false
+        }
+      ).Display()
+    }
+
+    if (showRenameDialog && selectedDeck != null) {
+      DeckNameDialog(
+        title = "Введіть нову назву деки:",
+        confirmButtonText = "Перейменувати",
+        initialValue = selectedDeck!!.name,
+        onDismiss = {
+          showRenameDialog = false
+          selectedDeck = null
+        },
+        onConfirm = { newName ->
+          viewModel.renameDeck(selectedDeck!!.id, newName)
+          showRenameDialog = false
+          selectedDeck = null
+        }
+      ).Display()
+    }
+
+    if (showDeleteDialog && selectedDeck != null) {
+      ConfirmationDialog(
+        title = "Видалити деку",
+        message = "Ви впевнені, що хочете видалити деку \"${selectedDeck!!.name}\"? Усі картки в цій деці також будуть видалені.",
+        confirmButtonText = "Видалити",
+        onConfirm = {
+          viewModel.deleteDeck(selectedDeck!!.id)
+          showDeleteDialog = false
+          selectedDeck = null
+        },
+        onDismiss = {
+          showDeleteDialog = false
+          selectedDeck = null
         }
       ).Display()
     }

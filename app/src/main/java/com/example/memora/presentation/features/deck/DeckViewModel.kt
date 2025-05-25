@@ -31,6 +31,27 @@ class DeckViewModel(private val deckDao: DeckDao) : ViewModel() {
     }
   }
 
+  fun renameDeck(deckId: Long, newName: String) {
+    viewModelScope.launch {
+      val deck = deckDao.getDeckById(deckId)
+      if (deck != null) {
+        val updatedDeck = deck.copy(name = newName)
+        deckDao.updateDeck(updatedDeck)
+        getAllDecks()
+      }
+    }
+  }
+
+  fun deleteDeck(deckId: Long) {
+    viewModelScope.launch {
+      val deck = deckDao.getDeckById(deckId)
+      if (deck != null) {
+        deckDao.deleteDeck(deck)
+        getAllDecks()
+      }
+    }
+  }
+
   suspend fun getCardCountForDeck(deckId: Long): Int {
     return deckDao.getCardCountForDeck(deckId)
   }
